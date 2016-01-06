@@ -1,0 +1,61 @@
+\documentclass[a4paper]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{fullpage}
+
+
+\title{MVC-based Graphical User Interfaces using reactive programming}
+\author{Bruno Rocha Pereira - 529512}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Since the title of this specific subject regroups different subtopics with different related literatures, the subtopics' litterature will be dealt with in different paragraphs. However some of them have already been linked together in articles.
+
+\section{MVC}
+
+The first part of the main complete topic is the study of the MVC framework.
+
+The initial document written about the MVC model was "Thing-Model-View-Editor"\cite{reenskaug1979athing}. Reenskaug presents in this paper what is going to be transformed into the MVC model that is currently known and used. It is a must-read to start studying the MVC topic since the article deals with its roots. His idea is clarified in his next paper \cite{reenskaug1979models}, in which he gives precise definitions of the terms Model, View, Controller. 
+
+This concept is vastly enriched in another article published almost ten years later\cite{cookbookMVC} that gives a practical application of the MVC paradigm using an object-oriented programming language. This cookbook also provides an explicit link between MVC and the usage of a user interface, which is also a part of the subject studied here. Reenskaug, also wrote a more recent article giving a topical overview over the MVC framework \cite{MVCPastPresent}.
+
+ The article "A comparison of model view controller and model view presenter" \cite{MVCvsMVP} has to be read to determine the technical advantages and disadvantages of the MVC pattern.
+
+
+"Structures and interactions"'s interest\cite{nowack1999structures} is that the inside of the architecture is explained and compared to other architectural patterns.
+
+
+A few applications of the concept of MVC may help study it. The book "The Definitive Guide to Java Swing" \cite{SwingMVC} can be looked into to see an example of it in an generally know language.
+
+The lack of recent articles about MVC denotates that MVC research is currently not in active research.
+
+\section{Reactive Programming}
+
+The study of reactive programming starts with a historical research about the first articles written linked with the reactive logic.
+
+In order to understand and really master what reactive programming is, a mastery of data-flow programming is compulsory. "First version of a data flow procedure language" \cite{FirstDataFlow} was the starting article about the data-flow concept, therefore being an interesting article to start with. It introduces the basic ideas of what a dataflow-based language should be like. In addition to that, a look into "A history of data-flow languages" \cite{whiting1994history} provides information about the whole history of data-flow languages and their evolution, hence presenting to the reader the mistakes not to reiterate.
+
+Reactive programming can also be seen as a pipeline implementation. Therefore, researching articles concerning the research on data pipelines is necessary. The first articles were mainly written or contributed to by Andreas Buja. "A data viewer for multivariate data"\cite{buja1987data} and "Elements of a viewing pipeline for data analysis"\cite{buja1988elements} were the first two articles to describe the implementation of data as contained in pipelines for real-time graphics. "The plumbing of interactive graphics" is a more recent one, that uses data pipelines for interactive graphics.
+
+Reactive programming knowledge has been summarized recently in the article "A Survey on Reactive Programming" \cite{surveyreactiveprogramming}. This article is useful since it regroups the current knowledge about reactive programming and can give a quick overview on the subject.
+
+A link between user interfaces and reactive programming can be found in a recent article called "Reactive Programming for Interactive Graphics". \cite{reactiveinteractivegraphics}.    This article is one of the most important for this research since it combines every subtopic our main topic can be divised into : MVC, GUI and reactive programming.
+
+Zhanyong Wan and Paul Hudak have written several articles about FRP( Functionnal Reactive Programming ) starting from the basics with "Functional reactive programming from first principles"\cite{FRPFirstPrinciples}. It explains what reactive programming is, using functional programming lanquages. An advantage that this article has over other articles is that it gives a limit that FRP has. "Event-Driven FRP"\cite{wan2002event} was another article written by these two authors. As its name indicates, this one is more focused on events. It has to be considered since events is an important concept in interactive user interfaces. The two authors have also contributed to "Real-time FRP"\cite{wan2001real}. Their aim in it is to accelerate FRP programs to allow them to run in RT environments.
+
+Another article combining FRP and GUI is "Elm: Concurrent FRP for Functional GUIs"\cite{czaplicki2012elm}. It uses a new language called \textit{Elm} to propose a new approach to easy reactive GUI with functional programming languages. Elm is now one of the main FRP still in development, which makes this article important to consider. Its author adds more content to it in another interesting article called "Asynchronous functional reactive programming for GUIs"\cite{czaplicki2013asynchronous}. An application of \textit{Elm}, with code included is shown in the article \cite{kraeutmann2015functional}. Eventhough it's applied to making games, the logic stays the same for any software and the fact that this article is recent contributes to demonstrate that FRP is still an active field of research.
+
+
+\bibliographystyle{apalike}
+
+\bibliography{assign1}
+
+\end{document}

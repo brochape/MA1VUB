@@ -1,0 +1,71 @@
+\documentclass[12pt,a4paper,twocolumn]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[colorinlistoftodos]{todonotes}
+
+
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.30\textwidth]{VUB.png}\par\vspace{1cm}
+    {\scshape\Large Principles of Object-Oriented Programming Languages\par}
+    \vspace{1cm}
+    {\scshape\Large Assignement - Languages comparison : Python and Smalltalk\par}
+    \vspace{1.5cm}
+    {\Large\itshape Bruno Rocha Pereira - 0529512\par}
+    \vfill
+\end{titlepage}
+
+\section{Closures}
+\section{Delegation}
+\section{Inheritance}
+Python : Multiple inheritance
+ST : Simple with methods to simulate multiple. No way to do an diamond inheritance
+\section{Meta objects}
+\section{Refactoring}
+\section{Typing}
+\section{Mixins}
+Python has mixins.
+Example : the socketserver module contains TCPServer and UDPServer as well as the ForkingMixin and ThreadingMixin mixins. Using a mixin with a class consists of creating a new class inheriting the class and the mixin. We can thus write a class ThreadingUDPServer:
+class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
+that will use threading to handle each connection to the UDP server.
+Pharo has traits.
+\section{Reflexion}
+Inspection are allowed in both languages. 
+
+>>> import os
+>>> os.path = 42
+>>> os.path
+42
+>>> os.path.join()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'int' object has no attribute 'join'
+
+However, in python some built-in functions (like print, datetime,..) cannot be changed (they can still be overwritten) since they are written in C.
+The list of built-in functions can be found using dir(__builtins__)
+Example of 
+>>> print.__str__()
+'<built-in function print>'
+>>> print.__str__ = 42
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'builtin_function_or_method' object attribute '__str__' is read-only
+
+
+
+\section{Concurrency}
+
+
+
+\end{document}

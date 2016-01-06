@@ -1,0 +1,62 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{todo}
+
+% \title{Function Reactive Programming and its speed contribution to GUI}
+% \subtitle{Assignement 2 - Research setup and proposal}
+% \author{Bruno Rocha Pereira - 529512}
+
+\renewcommand{\baselinestretch}{1.5}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.30\textwidth]{VUB.png}\par\vspace{1cm}
+    {\scshape\Large Methods for scientific research\par}
+    \vspace{1cm}
+    {\scshape\Large Assignement 2 - Research setup and proposal\par}
+    \vspace{1.5cm}
+    {\huge\bfseries Functional Reactive Programming and its speed contribution to GUIs\par}
+    \vspace{1cm}
+    {\scshape Keywords : functional programming, reactive programming, desktop graphical user interfaces, efficiency \par}
+    \vspace{1cm}
+    {\Large\itshape Bruno Rocha Pereira - 0529512\par}
+    \vspace{1.5cm}
+    {Wordcount : 701}
+    \vfill
+\end{titlepage}
+
+\section{Introduction}
+Functional Reactive Programming is a programming framework that stands on two main ideas : \textit{behaviours} and \textit{events}. Reactive programs need to answer to internal and external stimuli - \textit{events} - with a defined behaviour, which is exactly what a user interface does. \cite{wan2000functional} One of the most advantageous side of FRP is the introduction of datatypes that can observe values changing over time and thus react as soon as the change happens.\cite{kraeutmann2015functional}
+
+Previous work in the FRP research field has shown that using it was a great improvement to create GUIs. However, this improvement has not really been quantified. The aim of this research is to define the speed difference as well as propose an improvement of the speed, implementing a programming language with a natively supported GUI library. Comparisons between OO programming and Functional reactive programming have already been made \cite{salvaneschi2014empirical}. However, this research will only use pure functional programming and will thus avoid object-oriented programming.
+
+\section{Research Questions}
+\subsection{What is the speed and memory usage difference between reactive and non reactive programming in the case of GUI and 3D?}
+Reactive programming brings a whole new vision of data that is more suitable for event-driven softwares and show greater performances spped-wise in such cases.\cite{bainomugisha2013survey} 
+The point of this study is to quantify the speed difference that reactive programming brings to a software with a GUI. This will also give a good knowledge of the current level of FPS(Frames Per Second) reached by reactive and non reactive applications in specific cases. 
+\subsection{Could a programming language be implemented with a built-in reactive 3D library?}
+The programming language Elm has already been designed for GUI purpose on a FRP basis. However, the Elm compiler produces css, html and javascript, thus aimed at web pages.\cite{czaplicki2012elm}. The aim of this reseach is to implement a new functional reactive programming language aimed at creating GUIs for a desktop application - and more particularly games - purpose without any external library. The implemented language will have to handle reactive OpenGL bindings for the 3D part.
+
+
+\section{Methods}
+\subsection{Implementing a software with a GUI}
+The goal of this method is to implement a small game with a GUI using reactive programming and non reactive programming. These softwares have to be implemented using the same language - Haskell - to avoid bias due to the language itself. The two libraries that will be used for the 2D GUI are \textit{wxHaskell} for the non reactive programming part, and \textit{reactive banana} for the FRP one\cite{reactbanana}. The 3D part will be implemented using OpenGL. Haskell has two libraries that bring OpenGL Utility Toolkit bindings to it.The first one is the simple implementation of GLUT in haskell \cite{glut} while the other one combines glut with reactive\cite{reactglut}. The observation of the FPS variation gives a good indication of the performances difference between the two implementations.
+The last step of this research is to implement a basic FRP language with a built-in reactive GUI. The new created FRP language will then be compared to existing functional reactive framework such as \textit{reactive banana} for Haskell. To allow the comparison, the same desktop application will be implemented. The exact same operations will then be applied manually on the user interface - several times to avoid bias due to the user reaction time. Haskell provides many tools for profiling \cite{o2008real}. Correct profiling tools must then also be implemented in the newly created language in order to compare in the most precise way the 3 implementations.
+
+Several 3D scenes will be generated in order to identify the pros and cons of each implementation. Each scene will have different complex elements to render. The different FPS values and the memory usage will be extracted and saved for a comparison. This will bring several points of comparison and allow to determine whether an implementation is generally more efficient than the other or if each of them has a more specific usage.
+
+\section{Outcome}
+A chart presenting precise FPS values and memory usage of the different softwares in several situations will be realized. The real contribution of the FRP in 3D and GUIs will be thus meticulously quantified. However, a functional programming language fully implemented for a 3D animation purpose is the main goal to achieve. The implemented language will compute 3D environment in a reactive way using only functional programming. The computation speed will overtake haskell's one since it will avoid any feature not GUI or 3D related. This will allow more interactive and more reactive 3D softwares such as video games, medical visualization tools and engineering tools. 
+
+\bibliographystyle{apalike}
+
+\bibliography{brunoROCHAPEREIRAMWO2}
+
+\end{document}
