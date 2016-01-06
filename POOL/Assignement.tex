@@ -40,6 +40,30 @@ Example : the socketserver module contains TCPServer and UDPServer as well as th
 class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
 that will use threading to handle each connection to the UDP server.
 Pharo has traits.
+
+Defining a trait:
+TAnnouncer>>announce: anAnnouncement
+    | announcement |
+    announcement := anAnnouncement asAnnouncement.
+    self subscriptions ifNil: [ ^ announcement ].
+    self subscriptions keysAndValuesDo: [ :class :actions|
+        (class handles: announcement) 
+            ifTrue: [ actions valueWithArguments: (Array with: announcement) ] ].
+    ^ announcement
+TAnnouncer>>on: anAnnouncementClass do: aValuable
+    ^ self subscribe: anAnnouncementClass do: aValuable
+
+
+Using it : 
+
+Object subclass: #BulletinBoard
+    uses: TAnnouncer
+    instanceVariableNames: 'subscriptions'
+    classVariableNames: ''
+    poolDictionaries: ''
+    category: 'BulletinBoard'
+
+\footnote{http://pharo.gemtalksystems.com/book/LanguageAndLibraries/Traits/}
 \section{Reflexion}
 Inspection are allowed in both languages. 
 
