@@ -2,13 +2,16 @@ module Doodle (StringSet, Cmd, Timestamp(..), ServerData(..), Doodle(initialize,
 import qualified Control.Concurrent     (forkIO)
 import qualified Control.Concurrent.STM as STM
 import qualified Control.Monad.STM      as MSTM
+import qualified Data.Function          as F
 import qualified Data.List              as L
 import qualified Data.Map               as M
 import qualified Data.Maybe             as D
+import qualified Data.Set               as S
 import qualified Network                (Socket, accept)
 import qualified Parser
 import qualified System.IO
 import qualified System.Random          as R
+
 
 
 prompt :: Read a => String -> IO b -> (a -> IO b) -> IO b
@@ -239,15 +242,19 @@ exec (Subscribe login password doodleName) sdata@(ServerData admn studnts teachr
 exec (Prefer login password doodleName (from,to)) sdata@(ServerData admn studnts teachrs dodles crss pwlist) =
       if checkLogin (login, password) studnts then prefer login doodleName (from, to) sdata else (sdata, WrongLogin)
 
+exec ExamSchedule sdata=
+  examSchedule sdata
+
+
 exec ParseErr sdata = (sdata, ParseError)
-     
+
 
 
 answerToString:: Answer -> String
 answerToString WrongLogin = "wrong-login"
-answerToString (OkToken token) = "ok" ++ show token
-answerToString (OkDoodle doodle) = "ok" ++ show doodle
-answerToString (OkSchedule schedule) = "ok" ++ show schedule
+answerToString (OkToken token) = "ok " ++ token
+answerToString (OkDoodle doodle) = "ok " ++ show doodle
+answerToString (OkSchedule schedule) = "ok " ++ show schedule
 answerToString OK = "ok"
 answerToString IdTaken = "id-taken"
 answerToString NoId = "no-such-id"
@@ -259,21 +266,21 @@ answerToString ParseError = "parse-error"
 parse :: Parser.Parser Cmd
 parse = Parser.oneof[parseAddTeacher,parseAddStudent,parseChangePassword,parseGetDoodle,parseSetDoodle,parseSubscribe,parsePrefer,parseExamSchedule,parseError]
 
+
+parseAddPerson :: String -> (String -> String -> String -> Cmd) -> Parser.Parser Cmd
+parseAddPerson str addType = do Parser.keyword str
+                                login <- Parser.token
+                                Parser.char '@'
+                                password <- Parser.token2
+                                token <- Parser.token
+                                return $ addType login password token
+
+
 parseAddTeacher :: Parser.Parser Cmd
-parseAddTeacher = do Parser.keyword "add-teacher"
-                     login <- Parser.token
-                     Parser.char '@'
-                     password <- Parser.token2
-                     token <- Parser.token
-                     return $ AddTeacher login password token
+parseAddTeacher = parseAddPerson "add-teacher" AddTeacher
 
 parseAddStudent :: Parser.Parser Cmd
-parseAddStudent = do Parser.keyword "add-student"
-                     login <- Parser.token
-                     Parser.char '@'
-                     password <- Parser.token2
-                     token <- Parser.token
-                     return $ AddStudent login password token
+parseAddStudent = parseAddPerson "add-student" AddStudent
 
 parseChangePassword :: Parser.Parser Cmd
 parseChangePassword = do Parser.keyword "change-password"
@@ -437,23 +444,67 @@ subscribe login courseName (ServerData admn studnts teachrs dodles crss pwlist) 
                                                                  then (ServerData admn studnts teachrs dodles crss pwlist, NoId)
                                                                  else (ServerData admn studnts teachrs dodles (M.insertWith (++) courseName [login] crss ) pwlist,OK)
 
+
 prefer :: String -> String -> (Timestamp, Timestamp) -> ServerData ->  (ServerData,Answer)
 prefer studentName doodleName (from,to) sdata@(ServerData admn studnts teachrs dodles crss pwlist) = let index = L.findIndex (\(_,StringSet x _) -> x == doodleName) dodles
                                                                                                          (mostdoodles,(teacher,doodle@(StringSet title slots)):xs) = splitAt2 index dodles
                                                                                                          index2 = L.findIndex (\(a,b,_) -> (a,b) == (from,to) ) slots
                                                                                                          correctDoodle = toogle studentName index2 doodle
                                                                                                          correctDoodles = mostdoodles ++ [(teacher,correctDoodle)] ++ xs
+                                                                                                         studList = M.lookup doodleName crss
 
                                                                                                      in
                                                                                                       if D.isNothing index
                                                                                                       then (sdata, NoId)
+                                                                                                      else if (D.isJust studList && not(elem studentName (D.fromJust studList)))
+                                                                                                      then (ServerData admn studnts teachrs dodles crss pwlist,NotSub)
                                                                                                       else (ServerData admn studnts teachrs correctDoodles crss pwlist, OK)
+
+
+
+getMostWantedSlot :: StringSet Timestamp -> (String,(Timestamp,Timestamp))
+getMostWantedSlot (StringSet titl timeslts) = let (from,to,_) = L.maximumBy (compare `F.on` length . (\(_,_,a) -> a)) timeslts
+                                              in
+                                                  (titl, (from,to))
+
+overlap :: (Timestamp,Timestamp) -> (Timestamp,Timestamp) -> Bool
+overlap (from1,to1) (from2,to2) =
+  (from1 <= from2 && to1 >= from2) || (from2 <= from1 && to2 >= from1)
+
+
+haveCommonStudent :: M.Map String [String]  -> String -> String -> Bool
+haveCommonStudent courses c1 c2 = haveCommonStudent2 (M.lookup c1 courses) (M.lookup c2 courses)
+
+haveCommonStudent2 :: Maybe [String] -> Maybe [String] -> Bool
+haveCommonStudent2 Nothing _ = False
+haveCommonStudent2 _ Nothing = False
+haveCommonStudent2 (Just l1) (Just l2) = not(S.null ( S.fromList l1 `S.intersection` S.fromList l2))
+
+
+areInConflict :: M.Map String [String] -> (String,(Timestamp,Timestamp)) -> (String,(Timestamp,Timestamp)) -> Bool
+areInConflict courses (c1,t1) (c2,t2) = (haveCommonStudent courses c1 c2) && (overlap t1 t2)
+
+isValid :: M.Map String [String] -> [(String,(Timestamp,Timestamp))] -> Bool
+isValid _ [] = True
+isValid courses (x:xs) =
+  foldl (\res -> \y -> res && not(areInConflict courses x y)) True xs && isValid courses xs
+
+
+
+examSchedule :: ServerData -> (ServerData, Answer)
+examSchedule sdata@(ServerData admn studnts teachrs dodles crss pwlist) = let stringsets = map (\(_,stringset) -> stringset) dodles
+                                                                              schedule = M.fromList $ map getMostWantedSlot stringsets
+                                                                          in
+                                                                            if isValid crss (M.toList schedule)
+                                                                            then (sdata, OkSchedule schedule)
+                                                                            else (sdata, NoSchedule)
+
+
 
 splitAt2 :: Maybe Int -> [a] -> ([a],[a])
 splitAt2 Nothing _ = ([],[])
 splitAt2 (Just index) lst = splitAt index lst
 
--- examSchedule ::
 checkLoginAdmin :: (String, String) -> ServerData -> Bool
 checkLoginAdmin (iD, pw) (ServerData admn studnts teachrs dodles crss pwlist) = (iD,pw) == admn
 
