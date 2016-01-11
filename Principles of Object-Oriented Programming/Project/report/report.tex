@@ -1,0 +1,58 @@
+\documentclass[12pt,a4paper]{scrartcl}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{accsupp}
+\newcommand*{\noaccsupp}[1]{\BeginAccSupp{ActualText={}}#1\EndAccSupp{}}
+% end
+
+\usepackage{xcolor}
+\usepackage{listings}
+\begin{document}
+\begin{titlepage}
+    \centering
+    \includegraphics[width=0.30\textwidth]{VUB.png}\par\vspace{1cm}
+    {\scshape\Large Principles of Object-Oriented Programming Languages\par}
+    \vspace{1cm}
+    {\scshape\Large Assignement - Project : Star Exam\par}
+    \vspace{1.5cm}
+    {\Large\itshape Bruno Rocha Pereira - 0529512\par}
+    \vfill
+\end{titlepage}
+\section{Introduction}
+\section{Design choices}
+In this report, I'm explaining every choice of implementation made in the project assignement. The explicit methods or choice of implementation that strictly follow the wording of the assignement will not be discussed as I consider they are of poor interest.
+
+\subsection{Ship attack:}
+A ship can either attack a city or another ship. To avoid checking the parameter class,  I decided to revert the function and call the function getAttacked on the parameter instead, hence avoiding unnecessary branching.
+
+\subsection{Captain informOfCriticalDamage}
+In order to follow the logic of informing a captain of critical damages, this function has been kept like this. However it does absolutely nothing but delegating everything to the ship containing the captain, since every following operation has to be conducted on the ship. Thus, I considered there was no point in doing everything in the captain class.
+
+\subsection{Maneuver canAvoid:}
+I decided to make it impossible for a maneuver to avoid an attack from a device it doesn't know by setting the effectiveness to -1 when the device isn't known. However, if we wanted to make it so the pursuit point equal to 0 allowed to avoid an unknown device, setting it to 0 would have been more suitable.
+
+\subsection{Ship Crewmembers}
+In my choice of implementation, the members who operate a subsystem aren't permanently stored in the ship. This allows me to not store them twice : in the subsystem and in the ship. The crewMembers getter should however return the correct list of all the crewMembers (except the captain). The crewMembers OrderedCollection is copied and completed with the operators.
+
+\subsection{Ship getBestCombatDevice}
+The getBestCombatDevice method simply sorts the combat devices by damages. Once they're are sorted from the most damages to the least, we just have to take the first element.
+
+\subsection{Ship getOldestMembers}
+This method fetched all the members of all the subsystems. It then sorts each of the sublist by age and takes the first element of each of them.
+
+\subsection{Ship hasNoPoorlyAssigned}
+This function iterates on the operators of each subsystem and returns false as soon as one of them cannot handle the subsystem he's assigned to.
+
+
+
+
+\end{document}
