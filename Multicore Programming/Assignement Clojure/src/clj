@@ -1,0 +1,2 @@
+#!/bin/sh
+java -cp libs/clojure-1.8.0.jar:. clojure.main $@

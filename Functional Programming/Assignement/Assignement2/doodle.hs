@@ -353,6 +353,7 @@ parseSlot :: Parser.Parser (Timestamp,Timestamp)
 parseSlot = do from <- parseTime
                Parser.keyword "/"
                Parser.blank
+               -- parseTime >>= (return . (from,))
                to <- parseTime
                return (from,to)
 
