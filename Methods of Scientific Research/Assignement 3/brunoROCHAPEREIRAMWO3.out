@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Question 1}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Make histograms and boxplots of distributions of both colors.}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Make quantile-quantile plots comparing them with the normal distribution. Does this look OK?}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Test whether the reaction times for the two user interfaces are different, and report the effect size}{section.1}% 4
+\BOOKMARK [1][-]{section.2}{Question 2}{}% 5
+\BOOKMARK [2][-]{subsection.2.1}{Investigate whether there are significant differences between these groups, and figure out which groups are significantly different. Make sure you test the assumptions of the test you are using.}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.2}{Assuming a normal distribution, and aiming for a power of 0.8 and a p-value of 0.05, how large would your sample need to be to know whether there is a significant difference between the number of bugs in C and Scheme?}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Question 3}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Investigate whether the number of hours has predictive value for passing the test or not \(in other words, does training longer improve performance?\). Carefully explain your method.}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Does the age of the participants have a significant influence on the outcome of the test \(controlling for the effect of the number of training hours\)?}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Question 4}{}% 11
+\BOOKMARK [2][-]{subsection.4.1}{What are the percentages of finishing on time for the two conditions?}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.2}{Test if version management has a significant influence on whether a project runs on time or not.}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.3}{Explain why you used the test you used}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.4}{Do you find the result surprising? Can you think of a way this study could be improved?}{section.4}% 15

@@ -1,0 +1,155 @@
+1 3 1 2
+
+
+%1.1
+
+Question1_1 <- read.csv(file = "Data/Question1_1.csv", col.names = c('User','Participant', 'Interface', 'Time'), sep = ",")
+reds <- subset(Question1_1, Interface=="red")
+hist(reds$Time, xlab="Reaction Time(ms)", main="Search time using red interface", col="red",xlim=c(0,3000),ylim=c(0,35))
+
+blues <- subset(Question1_1, Interface=="blue")
+hist(blues$Time, xlab="Reaction Time(ms)", main="Search time using blue interface", col="blue",xlim=c(0,3000),ylim=c(0,35))
+
+redsTime <- reds$Time
+bluesTime <- blues$Time
+
+boxplot(redsTime,bluesTime,main="Reaction Time Boxplot", names= c("Red Interface","Blue Interface"),col = c("red","blue"),ylab= "Reaction time (ms)")
+
+%1.2
+
+qqnorm(redsTime, ylab = "Reaction Time (ms)", ylim = c(0, 2500))
+qqline(redsTime)
+
+%1.3
+different? Wilcoxon test
+
+cohens_d <- function(x, y) {
+lx <- length(x) - 1
+ly <- length(y) - 1
+md <- abs(mean(x) - mean(y))
+csd <- lx * var(x) + ly * var(y)
+csd <- csd/(lx + ly)
+csd <- sqrt(csd)
+cd <- md/csd}
+
+source : http://stackoverflow.com/questions/15436702/estimate-cohens-d-for-effect-size
+
+effect size = cohens_d(bluesTime,redsTime) = 0.5394272
+
+%2.1
+
+Question2_3 <- read.csv(file = "Data/Question2_3.csv",col.names = c('User', 'Language', 'Bugs'), sep = ",")
+subsc <- subset(Question2_3, Language=="C")
+subscpp <- subset(Question2_3, Language=="C++")
+subssch <- subset(Question2_3, Language=="Scheme")
+
+> mean(subsc$Bugs)
+[1] 101.2
+> mean(subscpp$Bugs)
+[1] 148.6
+> mean(subssch$Bugs)
+[1] 103.9667
+
+To see if we can use Anova, there are 3 conditions:
+1. Variables have to be independent 
+2. Variances have to be homogeneous
+3. Distributions have to be normal
+
+Bartlett's K-squared = 0.9677, df = 2, p-value = 0.6164 
+
+-> high p-value -> variances are homogeneous
+
+-> we use shapiro on every subset to check the normality of the distributions
+
+> shapiro.test(subssch$Bugs)
+
+    Shapiro-Wilk normality test
+
+data:  subssch$Bugs
+W = 0.9833, p-value = 0.9048
+
+> shapiro.test(subsc$Bugs)
+
+    Shapiro-Wilk normality test
+
+data:  subsc$Bugs
+W = 0.96691, p-value = 0.4583
+
+> shapiro.test(subscpp$Bugs)
+
+    Shapiro-Wilk normality test
+
+data:  subscpp$Bugs
+W = 0.98109, p-value = 0.8538
+-> All p-values are > 0.05 -> normal distribution
+
+-> we can use Anova
+
+labels <- gl( 3, 30 )
+mymodel <- aov( Question2_3$Bugs~labels )
+> anova(mymodel)
+Analysis of Variance Table
+
+Response: Question2_3$Bugs
+          Df Sum Sq Mean Sq F value    Pr(>F)    
+labels     2  42465 21232.7  60.512 < 2.2e-16 ***
+Residuals 87  30527   350.9                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+p-value very low (2.2e-16) = 0
+F(2.87) = 60.512
+
+-> The groups are different but we don't know how.
+-> We can conduct a Turkey Test to know more about the differences
+
+> TukeyHSD(mymodel)
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = Question2_3$Bugs ~ labels)
+
+$labels
+         diff       lwr      upr     p adj
+2-1  2.766667 -8.766012 14.29935 0.8353479
+3-1 47.400000 35.867322 58.93268 0.0000000
+3-2 44.633333 33.100655 56.16601 0.0000000
+
+-> #TODO : analyze differences
+
+c <- cohens_d(subsc$Bugs,subssch$Bugs)
+
+power.t.test( n = NULL, d = c, sig.level = 0.05, power = 0.8, sd = 1)
+
+     Two-sample t test power calculation 
+
+              n = 689.8112
+          delta = 0.1509582 
+             sd = 1
+      sig.level = 0.05
+          power = 0.8
+    alternative = two.sided
+
+NOTE: n is number in *each* group
+
+#Question 3
+Question3_1 <- read.csv(file = "Data/Question3_1.csv",col.names = c('Userid', 'Age', 'Training', 'Passed'), sep = ",")
+#3.1
+
+Create a model to fit generalized linear model
+model <- glm(formula = Question3_1$Passed ~ Question3_1$Training,family = binomial)
+plot(Question3_1$Training, Question3_1$Passed, xlab = "Hours of Training (h)", ylab = "Passed (Boolean)")
+points(Question3_1$Training, model$fitted, pch = "+" , col = 'red')
+
+Analysis : 
+
+
+
+#3.2
+    Does the age of the participants have a significant influence on the
+    outcome of the test (controlling for the effect of the number of
+    training hours)?
+
+The correlation between the age and the outcome of the test will be studied controlling for the effect of the number of 
+training hours
+
