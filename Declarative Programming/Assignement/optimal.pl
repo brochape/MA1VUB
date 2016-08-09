@@ -24,10 +24,10 @@ find_optimal(X):-
             !.%Only one needed
 
 find_opti(ScheduleList,OptimalSchedules) :-
-    sort(2,@=<,ScheduleList,Sorted),%Sort them per cost
-    nth1(1,Sorted,First),
-    nth1(2,First,Cost),% Takes the cost of the first elem (with the lowest cost)
-    findall(Sched,member([Sched,Cost],Sorted),OptimalSchedules).%Makes a list of all the schedules that have that minimal cost
+            sort(2,@=<,ScheduleList,Sorted),%Sort them per cost
+            nth1(1,Sorted,First),
+            nth1(2,First,Cost),% Takes the cost of the first elem (with the lowest cost)
+            findall(Sched,member([Sched,Cost],Sorted),OptimalSchedules).%Makes a list of all the schedules that have that minimal cost
 
 %% first([Head|_],Head).
 
