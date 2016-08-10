@@ -73,8 +73,13 @@ S = schedule([event(e1, r2, 2, 10), event(e2, r2, 5, 10),
  event(e3, r1, 4, 10), event(e4, r2, 4, 10), event(e5, r2, 3, 13)]).
  
  
-?- is_optimal(schedule([event(e1, r2, 2, 10), event(e2, r2, 5, 10), event(e3, r1, 4, 10), event(e4, r2, 4, 10), event(e5, r2, 3, 13)])).
+?- is_optimal(schedule([event(e1, r2, 2, 10), event(e2, r2, 5, 10),
+ event(e3, r1, 4, 10), event(e4, r2, 4, 10), event(e5, r2, 3, 13)])).
 true .
+
+?- find_heuristically(X).
+X = [event(e1, r2, 3, 10), event(e2, r2, 5, 10), event(e3, r2, 4, 10),
+ event(e4, r1, 4, 10), event(e5, r2, 2, 10)].
 
 
 ?- pretty_print(schedule([event(e1, r2, 3, 10), event(e2, r2, 2, 10),
