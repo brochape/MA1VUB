@@ -1,7 +1,7 @@
 :- module(pretty_print,[pretty_print/1, pretty_print/2]).
 
 
-:- use_module(sort, [sort_schedule/2]).
+:- use_module(sort_schedule, [sort_schedule/2]).
 :- use_module(helpers,[end/3, attends_exam/2]).
 
 %%===============PRETTY_PRINT=================
@@ -15,14 +15,13 @@
 pretty_print(Schedule):-
             writef("=======================\n       Schedule\n=======================\n"),
             sort_schedule(Schedule,SortedEvents),
-            print_next(SortedEvents,0,0).
+            print_next(SortedEvents,0,0),
+            !.
 
 %%pretty_print(+SID,+S)
 pretty_print(SID, Schedule):-
             writef("=======================\n       Schedule\n=======================\n"),
             sort_schedule(Schedule,SortedEvents),
-            print(SortedEvents),
-            print(SID),
             get_events_for_student(SID, SortedEvents, EventsForSID),
             print_next(EventsForSID,0,0).
 

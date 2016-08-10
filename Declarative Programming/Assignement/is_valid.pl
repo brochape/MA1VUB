@@ -1,4 +1,5 @@
-:- module(is_valid,[is_valid/1]).
+:- module(is_valid,[    is_valid/1,
+                        are_events_valid/1]).
 
 :- use_module(helpers, [takes_exam/2,
                         end/3, 
@@ -36,7 +37,7 @@ are_events_valid([]) :- !.
 are_events_valid([event(EID,RID,Day,Start)|Events]) :-
             simple_event_validation(event(EID,RID,Day,Start)),
             no_overlapping_for_event(event(EID,RID,Day,Start),Events),
-            are_events_valid(Events).%TODO problem if
+            are_events_valid(Events).
 
 
 
@@ -44,7 +45,7 @@ create_schedule(X, ExamsList) :-
             create_schedule(X, [], ExamsList).
 create_schedule(schedule([]), _, []) :- !.
 create_schedule(schedule([event(CurrentExam, Room, Day, Start) | Current]), ExistingEvents, [CurrentExam|RestExams]) :-
-            has_exam(CourseID, CurrentExam),
+            has_exam(_, CurrentExam),
             can_students_fit(CurrentExam, Room),
             is_room_available(event(CurrentExam, Room, Day, Start)),
             during_session(Day),

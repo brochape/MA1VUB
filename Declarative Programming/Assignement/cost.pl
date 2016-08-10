@@ -1,7 +1,7 @@
 :- module(cost,[cost/2, violates_sc/2]).
 
 :- use_module(helpers,[end/3,gives_exam/2, takes_exam/2,attends_exam/2, is_teacher/1, is_student/1, max/3, min/3, has_event_with_exam/3]).
-:- use_module(sort,[sort_schedule/2]).
+:- use_module(sort_schedule,[sort_schedule/2]).
 
 
 
@@ -42,8 +42,8 @@ violates_same_day(EventList, sc_same_day(PID,EID, EID2, Penalty)):-
             exam(EID,_),
             exam(EID2,_),
             EID @< EID2, %Needs a way to not insert permutations
-            has_event_with_exam(EventList, EID, event(EID, _, Day, Start)),
-            has_event_with_exam(EventList, EID2, event(EID2, _, Day, Start2)),
+            has_event_with_exam(EventList, EID, event(EID, _, Day, _)),
+            has_event_with_exam(EventList, EID2, event(EID2, _, Day, _)),
             attends_exam(PID, EID),
             attends_exam(PID, EID2),
             sc_same_day(PID, Penalty).
@@ -59,7 +59,6 @@ violates_b2b(EventList, sc_b2b(PID, EID, EID2, Penalty)) :-
             attends_exam(PID, EID),
             attends_exam(PID, EID2),
 
-            end(EID, Start, End),
             end(EID2, Start2, End2),
             End2 is Start,
             sc_b2b(PID, Penalty).

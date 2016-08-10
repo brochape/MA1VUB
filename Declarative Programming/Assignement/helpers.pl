@@ -12,8 +12,8 @@
                     simple_event_validation/1, 
                     can_students_fit/2,
                     number_of_students/2,
-                    is_room_available/1
-
+                    is_room_available/1,
+                    delete_first/3
                     ]).
 
 is_teacher(PID):- lecturer(PID,_).
@@ -71,3 +71,7 @@ simple_event_validation(event(EID,RID,Day,Start)):-
             during_session(Day),
             can_students_fit(EID,RID),
             is_room_available(event(EID,RID,Day,Start)).
+
+delete_first(E,[E|T],T) :- !.
+delete_first(E,[H|T1],[H|T2]) :- 
+    delete_first(E,T1,T2).
