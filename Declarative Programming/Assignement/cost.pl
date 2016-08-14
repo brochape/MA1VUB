@@ -10,10 +10,13 @@
 %%============================================
 
 %overlaps_period(+Start, +End, +PeriodStart, +PeriodEnd)
+%Checks if two periods overlap 
 overlaps_period(Start, End, PeriodStart, PeriodEnd) :-
             ((Start >= PeriodStart, Start < PeriodEnd) ;
             (End > PeriodStart, End =< PeriodEnd)).
 
+%violates_lunch_break(+Event,+EID,+PID,+Penalty)
+%Checks if the lunchbreak constraint is violated
 violates_lunch_break(event(EID,_,_,Start),EID,PID,Penalty):-
             attends_exam(PID, EID),
             end(EID, Start, End),
@@ -21,6 +24,8 @@ violates_lunch_break(event(EID,_,_,Start),EID,PID,Penalty):-
             overlaps_period(Start, End, 12, 13).
 
 %No exam in period for teachers
+%violates_no_exam_in_period(+Event, +LID, ?From, ?Till,+EID,+PID,+Penalty)
+%Checks if the lunchbreak constraint is violated
 violates_no_exam_in_period(event(EID, _, Day, Start), EID, LID, From, Till, Penalty):-
             gives_exam(LID, EID),
             end(EID, Start, End),

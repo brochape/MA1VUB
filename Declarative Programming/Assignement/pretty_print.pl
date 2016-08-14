@@ -25,12 +25,16 @@ pretty_print(SID, Schedule):-
             get_events_for_student(SID, SortedEvents, EventsForSID),
             print_next(EventsForSID,0,0).
 
+%get_events_for_student(+SID, +AllEvents, -EventsForExam)
+%Returns all the events that a student will go to
+%final state
 get_events_for_student(_, [], []).
+%If the user is not concerned by the event
 get_events_for_student(SID,[event(EID, _, _, _)|Events], StudentEvents):-
             has_exam(CID,EID),
             not(follows(SID, CID)),
             get_events_for_student(SID, Events, StudentEvents).
-
+%If he is concerned
 get_events_for_student(SID,[Event|Events],[Event|StudentEvents]):-
             get_events_for_student(SID, Events, StudentEvents).
 
@@ -39,6 +43,8 @@ get_events_for_student(SID,[Event|Events],[Event|StudentEvents]):-
 %%% COMPLETE SCHEDULE
 %%%%%%%%%%%%
 
+%print_next(+Events, +PreviousDay, +PreviousRoom)
+%Main loop for the printing that checks if the room/day changes and prints the correct headers before the event
 print_next([],_,_) :-!.
 %% Same day, same room
 print_next([event(EID,PreviousRoom,PreviousDay,Start)|OtherEvents],PreviousDay,PreviousRoom):-
@@ -58,13 +64,19 @@ print_next([event(EID,RID,Day,Start)|OtherEvents],_,_):-
             print_event(EID,RID,Start),
             print_next(OtherEvents,Day,0).
 
+%print_day(+Day)
+%Prints a day change
 print_day(Day):-
             format("\n Day ~I \n========\n\n",[Day]).
 
+%print_room(+RoomID)
+%Prints the room header
 print_room(RoomID):-
             room(RoomID,RoomName),
             format('~s :\n',[RoomName]).
 
+% print_event(+ExamID,+RoomID,+Start)
+% Prints the time and the exam name of an event
 print_event(ExamID,_,Start):-
             exam(ExamID,ExamName),
             end(ExamID,Start,End),
