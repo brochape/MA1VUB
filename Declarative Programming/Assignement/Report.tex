@@ -34,7 +34,7 @@ The cost/2 predicate makes use of the violates\_sc/2 described below to create a
 \subsection{$find\_optimal(-S)$}
 The find\_optimal/1 predicate makes use of the is\_optimal/1 described below and cuts after finding one optimal schedule.
 \subsection{$find\_heuristically(-S)$}
-The find\_heuristically/1 predicate generates a list of all the possible events and adds one by one the best event (i.e. the one that, once added, will give the lowest cost). Once all the exams are added, the validity is checked. If the current schedule is valid, we are done with technically the best schedule. If it isn't, we repair it with correct\_schedule/5.
+The find\_heuristically/1 predicate generates a list of all the possible events and adds one by one the best event (i.e. the one that, once added, will give the lowest cost). Once all the exams are added, the validity is checked. If the current schedule is valid, we are done with technically the best schedule. If it isn't, we repair it with correct\_schedule/5. The repair is done by changing the events one by one until reaching a valid schedule.
 \subsection{$pretty\_print(+S)$}
 The first step to pretty\_print/1 is to sort the schedule. This is done by associating a value to each event to insure that they are sorted by day, then by room and then by start time. The events are printed one by one, with the previous day and the previous room passed as argument to know if the next event is on another day or in another room.
 
@@ -46,14 +46,14 @@ The is\_valid(-S) predicate follows almost the same logic as is\_valid(+S) excep
 \subsection{$violates\_sc(+S, -SC)$}
 The violates\_sc(+S, -SC) predicate splits all the soft constraints in 2 groups: the simple ones(for individual events) and the complex ones(between different events).
 The simple constraint violations checker iterates over the list of events and finds all the constraints violations to add them to a list. The complex constraint violations checker splits the work. A predicate was written for every sc and then findall was used to get all the violations that happens. All the different lists are then merged into one big list. 
-violates\_sc/2 can be used with +SC as well, but the user must be careful as sc_dame_day(S1, E4,E1, 2) can be found instead of sc_same_day(S1, E1, E4, 2) for example.
+violates\_sc/2 can be used with $+$SC as well, but the user must be careful as sc\_dame\_day(S1, E4,E1, 2) can be found instead of sc\_same\_day(S1, E1, E4, 2) for example.
 \subsection{$is\_optimal(?S)$}
 The is\_optimal/1 predicate makes use of the is\_valid/1 and the cost/2 predicates to generate all the valid schedules along with their cost. It then sorts them by cost and takes all the schedules with the cost of the first one (technically, the lowest cost).
 \subsection{$find\_heuristically(-S, +T)$}
 This predicate makes use of the simple find\_heuristically/1 except it adds a time argument. One more clause was added on the top (to be the first eecuted) that checks every time if the time limit is reached.
 \subsection{$pretty\_print(+SID, +S)$}
 This predicate works almost as the simple pretty\_print/1 except it filters all the event for the student SID.
-
+\pagebreak
 
 \section{Strenghts and weaknesses}
 \subsection{Working predicates}
@@ -71,8 +71,8 @@ The working predicates for all instances in under 2 minutes are:
 For all the tests, all the constraints were taken into account.
 
 \subsection{Quality of heuristic}
-\todo
-
+For the heuristical search, events are added one by one to a temporary schedule and this schedule is checked everytime to be currently valid. During the implementation, it was noticed that it blocked around 18 exams inserted. This is due to the fact that it is difficult/impossible to have a valid schedule from this point. That's why the schedule correcter was added. This allowed the program to make invalid schedule and reparing them to make them valid in a second time. The time taken by the find\_heuristically could be possibly improved by well-placed cuts. 
+The results of the find\_heuristically for all the instances provided can be found hereinbelow.
 \subsection{Extensions implemented}
 \begin{itemize}
 \item $is\_valid(-S)$
@@ -92,20 +92,68 @@ The implementation doesn't rely on any property of any instance. Therefore, it s
 
 
 \subsubsection{Procedural style}
-Cuts were used in the program. Asserts and if-statements were avoided in order to make use of the declarative features of Prolog.
+Cuts were used in the program. Asserts and if-statements were avoided in order to make use of the declarative features of Prolog. The program was written as much as possible in a declarative style using cuts to avoid unnecessary backtracking.
 
 
 \subsubsection{Efficiency}
 As described \ref{test}, this program wasn't tested in the computer rooms. Although, all the different predicates were run on my laptop and all the required ones ere able to do so in less than 2 minutes.
-
+\pagebreak
 \section{Experimental Results}
-\subsection{Small instance - $find\_optimal(-S)$}
+\subsection{Small instance - find\_optimal(\-S)}
 The time taken by my scheduler to find an optimal schedule for the small instance is 3.745 seconds.
 \begin{lstlisting}[style=Linux]
 ?- time(find_optimal(X)).
 % 36,484,643 inferences, 3.745 CPU in 3.745 seconds (100% CPU, 9742980 Lips)
 X = schedule([event(e1, r2, 2, 10), event(e2, r2, 5, 10),
  event(e3, r1, 4, 10), event(e4, r2, 4, 10), event(e5, r2, 3, 13)]).
+\end{lstlisting}
+\subsection{Large instance - find\_heuristically}
+The code below represent the query run on the different instances.
+\subsubsection{Small Instance}
+Finding a solution heuristically gives us a cost of \texttt{2.75}.
+\begin{lstlisting}[style=Linux]
+?- find_heuristically(X),cost(schedule(X),Cost).
+X = [event(e1, r2, 3, 10), event(e2, r2, 4, 10), event(e3, r1, 5, 10),
+ event(e4, r2, 5, 10), event(e5, r2, 1, 10)],
+Cost = 2.75.
+\end{lstlisting}
+
+\subsubsection{Large Instance Short Session}
+Finding a solution heuristically for the large instance and the short session time gives us a cost of \texttt{17.538947368421052}.
+\begin{lstlisting}[style=Linux]
+?- find_heuristically(X),cost(schedule(X),C).
+X = [event(e1, r3, 4, 9), event(e2, r2, 4, 9), event(e3, r2, 6, 10),
+ event(e4, r2, 6, 14), event(e5, r3, 7, 13), event(e6, r2, 7, 9),
+ event(e7, r2, 7, 13), event(e8, r3, 5, 9), event(e9, r2, 3, 9),
+ event(e10, r3, 3, 9), event(e11, r2, 4, 13), event(e12, r2, 5, 9),
+ event(e13, r3, 7, 15), event(e14, r1, 5, 13), event(e15, r1, 6, 9),
+ event(e16, r1, 3, 13), event(e17, r1, 4, 13), event(e18, r3, 6, 9),
+ event(e19, r3, 7, 9), event(e20, r2, 5, 11), event(e21, r2, 3, 13),
+ event(e22, r3, 6, 13), event(e23, r2, 4, 15),
+ event(e24, r1, 3, 9), event(e25, r1, 7, 9), event(e26, r1, 3, 15),
+ event(e27, r1, 5, 9), event(e28, r3, 3, 13), event(e29, r3, 4, 13),
+ event(e30, r2, 3, 15), event(e31, r3, 4, 15), event(e32, r2, 5, 15),
+ event(e33, r3, 6, 15), event(e34, r3, 3, 15)],
+C = 17.538947368421052.
+\end{lstlisting}
+
+\subsubsection{Large Instance Long Session}
+Finding a solution heuristically for the large instance and the long session time gives us a cost of \texttt{0.2631578947368421}.
+\begin{lstlisting}[style=Linux]
+?- find_heuristically(X),cost(schedule(X),C).
+X = [event(e1, r3, 4, 9), event(e2, r2, 4, 9), event(e3, r2, 6, 10),
+event(e4, r2, 7, 9), event(e5, r3, 10, 9), event(e6, r2, 6, 14),
+event(e7, r2, 10, 9), event(e8, r3, 10, 13), event(e9, r2, 11, 9),
+event(e10, r3, 11, 9), event(e11, r2, 12, 9), event(e12, r2, 14, 9),
+event(e13, r3, 12, 9), event(e14, r1, 6, 9), event(e15, r1, 12, 9),
+event(e16, r1, 14, 9), event(e17, r1, 17, 9), event(e18, r3, 17, 9),
+event(e19, r3, 19, 13), event(e20, r2, 11, 11), event(e21, r2, 13, 9),
+event(e22, r2, 17, 13), event(e23, r2, 18, 9), event(e24, r1, 19, 9),
+event(e25, r1, 19, 13), event(e26, r1, 19, 15), event(e27, r1, 20, 9),
+event(e28, r3, 14, 9), event(e29, r3, 19, 9), event(e30, r2, 11, 15),
+event(e31, r2, 12, 13), event(e32, r2, 14, 13), event(e33, r2, 17, 9),
+event(e34, r2, 18, 13)],
+C = 0.2631578947368421.
 \end{lstlisting}
 
 
