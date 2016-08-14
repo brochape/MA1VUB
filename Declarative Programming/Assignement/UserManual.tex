@@ -53,7 +53,6 @@ This program shows all the requested functionalities as well as all the extra on
 \item $find\_heuristically(-S, +T)$
 \item $pretty\_print(+SID, +S)$
 \end{itemize}
-\todo{Add heuristically}
 \section{Example with the small instance}
 \begin{lstlisting}[style=Linux]
 ?- is_valid(schedule([event(e1, r2, 3, 10), event(e2, r2, 2, 10),
@@ -77,9 +76,10 @@ S = schedule([event(e1, r2, 2, 10), event(e2, r2, 5, 10),
  event(e3, r1, 4, 10), event(e4, r2, 4, 10), event(e5, r2, 3, 13)])).
 true .
 
-?- find_heuristically(X).
-X = [event(e1, r2, 3, 10), event(e2, r2, 5, 10), event(e3, r2, 4, 10),
- event(e4, r1, 4, 10), event(e5, r2, 2, 10)].
+?- find_heuristically(X),cost(schedule(X),Cost).
+X = [event(e1, r2, 3, 10), event(e2, r2, 4, 10), event(e3, r1, 5, 10),
+ event(e4, r2, 5, 10), event(e5, r2, 1, 10)],
+Cost = 2.75.
 
 
 ?- pretty_print(schedule([event(e1, r2, 3, 10), event(e2, r2, 2, 10),
