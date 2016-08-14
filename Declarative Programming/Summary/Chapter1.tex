@@ -1,0 +1,58 @@
+\mychapter{1}{Main concepts}
+\section{Clausal Logic}
+A logic system consists of:
+\begin{enumerate}
+\item \textbf{Syntax}: which sentences are legal
+\item \textbf{Semantics}: what is the truth value of a sentence
+\item \textbf{Proof theory}: how to derive new sentences (theorems) from assumed ones (axioms) by means of inference rules.
+\end{enumerate}
+A logic system should be:
+\begin{enumerate}
+\item \textbf{Sound}: anything you can prove is true.
+\item \textbf{Complete}: anything true can be proven.
+\end{enumerate}
+
+There are different clausal logic systems (in order of increasing expressiveness):
+\begin{enumerate}
+\item \textbf{Propositional clausal logic}:
+
+Only composed by atoms with are statements with a value of true or false.
+
+e.g.: married; bachelor :- man, adult.
+\item \textbf{Relational clausal logic}:
+
+Introduces relations between these atoms (constants or variables).
+
+e.g.: likes(Declarative, S) :- crazy(S).
+\item \textbf{Full clausal logic}:
+
+To avoid explicit listing of clauses, we introduce function symbols and complex terms (\textit{functors}) 
+
+e.g.: loves(X, person\_loved\_by\_(X)).
+\item \textbf{Definite clausal logic}:
+
+This is what Prolog uses. Clauses only have one true litteral.
+
+e.g.: A :- $B_1$ , ... $B_n$
+
+\end{enumerate}
+\section{Cut}
+
+\begin{displayquote}
+\textbf{
+Once you reached me, stick with all variable substitutions you've found after you entered my clause.}
+\end{displayquote}
+\section{Graphs}
+\section{Backward chaining \& Forward chaining}
+\section{Definite clause grammar}
+\section{Reasoning}
+\subsection{Default Reasoning}
+\subsection{Abductive Reasoning}
+\subsection{Inductive Reasoning}
+\section{Program completion}
+\section{Closed world assumption}
+\begin{displayquote}
+\textbf{
+Everything that is not known to be true is false.}
+\end{displayquote}
+\section{Bottom up induction \& Top down induction}

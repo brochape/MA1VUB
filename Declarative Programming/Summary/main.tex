@@ -1,0 +1,79 @@
+\documentclass[12pt, oneside]{report}
+\usepackage[margin=.85in]{geometry}
+\linespread{1.25}
+\usepackage{mathptmx}
+\usepackage{xcolor}
+\usepackage[colorlinks=false, linkbordercolor=white,  citebordercolor=white, 
+    filebordercolor=white,    urlbordercolor=white]{hyperref}
+    
+
+%\addbibresource{biblio.bib}
+
+%%% allows you to create Rules, Definitions, Lemmas, Theorems etc.
+\usepackage{amsthm}
+\usepackage{amsmath}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{Rule}{Rule}
+\numberwithin{definition}{chapter}
+\numberwithin{theorem}{chapter}  
+\numberwithin{lemma}{chapter}  
+\numberwithin{Rule}{chapter}  
+\numberwithin{equation}{chapter}     
+
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+%\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead{}
+\fancyhead[L]{Declarative Programming} %%% CHANGE AS APPROPRIATE (you may need to use a shortened form of the title)
+\fancyhead[R]{student ID} %%% CHANGE AS APPROPRIATE
+\fancyfoot{}
+\fancyfoot[C]{\thepage}
+
+\usepackage{titlesec}
+\titlespacing{\chapter}{0pt}{*4}{*2.5}
+
+\titleformat{\chapter}{\normalfont\huge\bf}{\thechapter}{20pt}{\huge\bf}
+
+\newcommand{\mychapter}[2]{
+    \setcounter{chapter}{#1}
+    \setcounter{section}{0}
+    \chapter*{#2}
+    \addcontentsline{toc}{chapter}{#2}
+}
+
+
+
+
+\newrobustcmd{\MakeTitleCase}[1]{%
+  \ifboolexpr{test {\ifentrytype{article}} or test {\ifentrytype{inbook}} or test {\ifentrytype{incollection}}}
+    {#1}
+    {\MakeSentenceCase{#1}}}
+
+
+\setcounter{tocdepth}{1} % allow only sections (not subsections in table of contents)
+
+\begin{document}
+\input{titlepage}
+\input{Abstract} %% any other "Front matter" should go here before the table of contents - format in a style similar to the file Abstract.tex
+\tableofcontents 
+\addtocontents{toc}{~\hfill\textbf{Page}\par} % comment this line out if you want to remove "Page"
+\input{Chapter1} % standard chapter format
+
+%\input{Conclusions}
+%\appendix
+%\input{appendix}  % uncomment out these two lines of code if you have an appendix!
+% you can have more than one appendix if (really) needed.
+
+%\printbibliography[keyword=primary, title=References]\addcontentsline{toc}{chapter}{References}
+
+%% uncomment next line if you want a Bibliography section also!
+%\printbibliography[keyword=secondary,title=Bibliography]\addcontentsline{toc}{chapter}{Bibliography}
+\end{document}
