@@ -127,6 +127,11 @@ To avoid explicit listing of clauses, we introduce function symbols and complex 
 e.g.: loves(X, person\_loved\_by\_(X)).
 
 
+The \textbf{Herbrand universe} is the set of ground terms that can be constructed from constants and functors. This can be infinite.
+
+The \textbf{Herbrand base $\beta_p$} is the set of all ground atoms that can be constructed using predicates in P and arguments in the Herbrand universe. Can be infinite.
+
+A \textbf{Herbrand interpretation \textit{I}} is a subset of $\beta_p$, with all the ground atoms that are true.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -136,6 +141,7 @@ This is what Prolog uses. Clauses only have one true litteral.
 
 e.g.: A :- $B_1$ , ... $B_n$
 
+Definite clausal logic rules out indefinite conclusions and fixes direction to use clauses.)
 \end{enumerate}
 \section{Cut}
 
@@ -206,7 +212,7 @@ Search algorithms can be:
 \subsection{Backward}
 Using backward chaining, the evaluation is done from head to body. The search starts where we want to be towards where we are. This is how Prolog query answering works.
 \subsection{Forward}
-Using backward chaining, the evaluation is done from body to head. The search starts where we are towards where we want to be. This is how a model construction works. This only workd for clauses where grounding the body also grounds the head (e.g.: \textbf{Best First Search}, that is based on a heuristic function.
+Using backward chaining, the evaluation is done from body to head. The search starts where we are towards where we want to be. This is how a model construction works. This only works for clauses where grounding the body also grounds the head (e.g.: \textbf{Best First Search}, that is based on a heuristic function.
 
 Which one is the most effective depends on the structure of the search space.
 
@@ -386,13 +392,13 @@ $
 \end{tcolorbox}
 \textbf{Induction} and \textbf{abduction} are quite similar. Their main difference is that in \textbf{Induction}, \textbf{Hypothesis} is allowed to be a set of clauses, while in \textbf{abduction} it has to be a set of ground facts. \textbf{Indtuction} reasoning is a hypothesis search involving successive \textbf{generalization} and \textbf{specialization} steps of a curent hypothesis. This means searching for a rule that generalizes those observations.
 \section{Unification and anti-unification}
-
+Anti-unification is the dual of the unification. It compares corresponding argument terms of two atoms, replaces them by a variable if the are different and then replaces subsequent occurrences of same term by same variable. 
 \section{Bottom up induction \& Top down induction}
 \subsection{Bottom up}
 Constructs the \textbf{rlgg}(Relative Least General Generalization) of two positive examples.
 It first removes all positive examples that are extensionally covered by the constructed clause and further generalizes the clause by removing literals as long as no negative examples are covered.
 \subsection{Top down}
-Starts with the most general definition and further specializes the clause by adding literals as long as negative examples are covered
+Starts with the most general definition and further specializes the clause by adding literals as long as negative examples are covered.
 
 
 %\input{Conclusions}
