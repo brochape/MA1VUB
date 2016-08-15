@@ -3,6 +3,10 @@
 \linespread{1.25}
 \usepackage{mathptmx}
 \usepackage{xcolor}
+\usepackage{minted}
+\usepackage{tcolorbox}
+\BeforeBeginEnvironment{minted}{\begin{tcolorbox}}%
+\AfterEndEnvironment{minted}{\end{tcolorbox}}%
 \usepackage[colorlinks=false, linkbordercolor=white,  citebordercolor=white, 
     filebordercolor=white,    urlbordercolor=white]{hyperref}
     
@@ -33,7 +37,7 @@
 %\renewcommand{\footrulewidth}{0.4pt}
 \fancyhead{}
 \fancyhead[L]{Declarative Programming} %%% CHANGE AS APPROPRIATE (you may need to use a shortened form of the title)
-\fancyhead[R]{student ID} %%% CHANGE AS APPROPRIATE
+\fancyhead[R]{Bruno Rocha Pereira} %%% CHANGE AS APPROPRIATE
 \fancyfoot{}
 \fancyfoot[C]{\thepage}
 
@@ -65,7 +69,331 @@
 \input{Abstract} %% any other "Front matter" should go here before the table of contents - format in a style similar to the file Abstract.tex
 \tableofcontents 
 \addtocontents{toc}{~\hfill\textbf{Page}\par} % comment this line out if you want to remove "Page"
-\input{Chapter1} % standard chapter format
+%\input{Chapter1} % standard chapter format
+
+\mychapter{1}{Main concepts}
+\section{Clausal Logic}
+A logic system consists of:
+\begin{enumerate}
+\item \textbf{Syntax}: which sentences are legal
+\item \textbf{Semantics}: what is the truth value of a sentence
+\item \textbf{Proof theory}: how to derive new sentences (theorems) from assumed ones (axioms) by means of inference rules.
+\end{enumerate}
+A logic system should be:
+\begin{enumerate}
+\item \textbf{Sound}: anything you can prove is true.
+\item \textbf{Complete}: anything true can be proven.
+\end{enumerate}
+
+There are different clausal logic systems (in order of increasing expressiveness):
+\begin{enumerate}
+\item \textbf{Propositional clausal logic}:
+
+Only composed by atoms with are statements with a value of true or false.
+
+e.g.: married; bachelor :- man, adult.
+
+The \textbf{Herbrand base $\beta_p$} is the set of all atoms occurring in the program.
+
+A \textbf{Herbrand interpretation \textit{i}} is a mapping of all atoms in $\beta_p$ to a truth value.
+
+An interpretation is a \textbf{model for a \underline{clause}} if the clause is true under the interpretation.
+
+An interpretation is a \textbf{model for a \underline{program}} if it is a model for each clause of the program.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item \textbf{Relational clausal logic}:
+
+Introduces relations between constants and/or variables.
+
+e.g.: likes(Declarative, S) :- crazy(S).
+
+The \textbf{Herbrand universe} is the set of all atoms the set of all ground terms occurring in P.
+
+The \textbf{Herbrand base $\beta_p$} is the set of all ground atoms that can be constructed using predicates in P and arguments in the Herbrand universe.
+
+A \textbf{Herbrand interpretation \textit{I}} is a subset of $\beta_p$, with all the ground atoms that are true.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item \textbf{Full clausal logic}:
+
+To avoid explicit listing of clauses, we introduce function symbols and complex terms (\textit{functors}) 
+
+e.g.: loves(X, person\_loved\_by\_(X)).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\item \textbf{Definite clausal logic}:
+
+This is what Prolog uses. Clauses only have one true litteral.
+
+e.g.: A :- $B_1$ , ... $B_n$
+
+\end{enumerate}
+\section{Cut}
+
+\begin{displayquote}
+\textbf{
+Once you reached me, stick with all variable substitutions you've found after you entered my clause.}
+\end{displayquote}
+
+Cuts are a procedural feature of Prolog and are expressed with the keyword !.
+When a cut is encountered, Prolog won't try alternatives for litterals left to the cut and the clause the cut is found, avoiding to backtrack.
+
+\subsection{Green Cut}
+Green cuts don't prune away success branches, it implies that the conjuncts on its left are deterministic and therefore don't need alternative solutions. It also implies that if the cut is reached, the clauses below with different head won't result in alternative solutions. Its use is to optimize the program. 
+
+e.g.:
+\begin{minted}{prolog}
+gamble(X) :- gotmoney(X),!.
+gamble(X) :- gotcredit(X), \+ gotmoney(X).
+\end{minted}
+
+\subsection{Red cut}
+Red cuts prune away success branches. This means that some logical consequences of the program are not returned. Changes the semantic of a program.
+
+e.g.:
+\begin{minted}{prolog}
+gamble(X) :- gotmoney(X),!.
+gamble(X) :- gotcredit(X).
+\end{minted}
+
+If for any reason the first rule is removed (e.g. by a cut-and-paste accident), the second rule will be broken, i.e., it will not guarantee the rule  \textbackslash $+$ (not)  gotmoney(X).\footnote{\url(https://en.wikipedia.org/wiki/Cut\_(logic\_programming))}
+
+\section{Negation as failure}
+In Prolog, the predicate \texttt{not(X)} is succeeds when X fails. It's implemented like this:
+
+\begin{minted}{prolog}
+not(Goal) :- Goal, !, fail.
+not(Goal).
+
+\end{minted}
+
+\section{Floundering}
+Floundering occurs when argument is not ground.
+The problem is that the implementation of the operator \textbackslash+ only works when applied to a literal containing no variables, i.e., a ground literal. It is not able to generate bindings for variables, but only test whether subgoals succeed or fail. So to guarantee reasonable answers to queries to programs containing negation, the negation operator must be allowed to apply only to ground literals. If it is applied to a nonground literal, the program is said to flounder. \footnote{\url{http://stackoverflow.com/questions/14715070/prolog-negation-and-logical-negation}}.
+
+For example, 
+
+\begin{minted}{prolog}
+\+ a(X), v(X).
+\end{minted}
+
+will lead to floundering since X is not ground in the not predicate. Instead, in order to avoid it, we need to use:
+
+\begin{minted}[breaklines]{prolog}
+v(X), \+ a(X).
+\end{minted}
+
+\section{Graphs}
+A prolog problem can be represented as a graph where the state is a \texttt{node}, the state transition is an \texttt{arc}, a \texttt{start node} and a \texttt{goal node} are defined and a solution is optimal if the cost over the path is minimal.
+
+Search algorithms can be:
+\begin{itemize}
+\item \textbf{complete}: if a solution is always found if there is one.
+\item \textbf{optimal}: if the best solution can be found if there are several.
+\item \textbf{efficient}: if it respects memory and runtime requirements.
+\item \textbf{blind} of \textbf{informed}: if the quality of partial solutions steer the process. Blind happens in algorithms like \textbf{BSF}(Breath Search First) or \textbf{DFS}(Depth Search First).
+\end{itemize}
+\section{Backward chaining \& Forward chaining}
+\subsection{Backward}
+Using backward chaining, the evaluation is done from head to body. The search starts where we want to be towards where we are. This is how Prolog query answering works.
+\subsection{Forward}
+Using backward chaining, the evaluation is done from body to head. The search starts where we are towards where we want to be. This is how a model construction works. This only workd for clauses where grounding the body also grounds the head (e.g.: \textbf{Best First Search}, that is based on a heuristic function.
+
+Which one is the most effective depends on the structure of the search space.
+
+\section{Natural Language Processing}
+A Natural language is a language used for communication between humans. The syntax of a language is specified by a grammar, which is a set of grammar rules of the form:
+\begin{minted}{text}
+Category1 --> Category2,Category3
+Category2 --> [Terminal]
+\end{minted}
+CategoryX Denotates a syntactic category.
+
+\textbf{Parsing} a sentence and determine its grammatical structure. The outcome is a parse tree that shows the grammatical constituents. The opposite operation is called sentence generation.
+
+\section{Definite clause grammar}
+Context-sensitive grammars greatly increase the complexity of the parsing task; moreover, the grammatical structure of sentences cannot be simply described by a parse tree. We will restrict attention to context-free grammars, extended with some Prolog-specific features. The resulting grammars are called Definite Clause Grammars.
+
+A grammar rule containing a terminal
+\begin{minted}{text}
+verb --> [sleeps]
+\end{minted}
+means: a list of words represents a verb if it is the list consisting of the single word ‘sleeps’.
+
+Translated to Prolog:
+\begin{minted}{prolog}
+verb([sleeps]).
+\end{minted}
+
+For example, if we have: 
+\begin{minted}{text}
+sentence --> noun_phrase,verb_phrase.
+noun_phrase --> proper_noun.
+noun_phrase --> article,adjective,noun.
+noun_phrase --> article,noun.
+verb_phrase --> intransitive_verb.
+verb_phrase --> transitive_verb,noun_phrase.
+article --> [the].
+adjective --> [lazy].
+adjective --> [rapid].
+proper_noun --> [achilles].
+noun --> [turtle].
+intransitive_verb --> [sleeps].
+transitive_verb --> [beats].
+\end{minted}
+We can generate a list of terminals like:
+\begin{minted}{text}
+the lazy turtle sleeps
+Achilles beats the turtle
+the rapid turtle beats Achilles
+\end{minted}
+DCG's are an excellent illustration of the power of declarative programming: specifying a grammar gives
+you the parser for free.
+
+\section{Reasoning with imcomplete information}
+\subsection{Default Reasoning}
+Assumes the normal state of affairs, unless there is an evidence of the contrary.
+\begin{minted}{text}
+If I push this button, the light in my room will be on.
+\end{minted}
+If we have something like this:
+\begin{minted}{text}
+Tweety is a bird.
+Normally, birds fly.
+Therefore, Tweety flies.
+\end{minted}
+can be translated to 
+\begin{minted}{prolog}
+bird(tweety).
+flies(X) :- bird(X), normal(X).
+\end{minted}
+Except in default reasoning, we don't need to specify if things are normal. We only need to specify if the bird was abnormal.
+
+We would then have:
+\begin{minted}{prolog}
+bird(tweety).
+flies(X) :- bird(X), not(abnormal(X)).
+\end{minted}
+This is a non-monotonic form because new information can invalidate former conclusions, for example:
+
+\begin{minted}{prolog}
+bird(tweety).
+flies(X) :- bird(X), not(abnormal(X)).
+ostrich(tweety).
+abnormal(X) :- ostrich(X).
+\end{minted}
+
+A form of reasoning is said to be \textbf{monotonic} when:
+
+\begin{tcolorbox}
+$
+Theory | Conclusion  => Theory\;\cup\;{AnyFormula}\; |\; Conclusion
+$
+\end{tcolorbox}
+This basically means than adding any new formulas won't change anything to the previously drawn conclusions.
+\subsection{Abductive Reasoning}
+Chooses between several explanations that explain an observation
+\begin{minted}{text}
+The light doesn't switch on, the light bulb must be broken
+\end{minted}
+Abducing is trying to prove \textbf{Observation} from theory when a literal is encountered that cannot be resolved (i.e. an abducible), add it to the \textbf{Explanation}. The basic idea is, having a head and a body, to try to prove the body. If it cannot be proved, it is added to the list of explanations. 
+\begin{tcolorbox}
+$
+Given\ a\ Theory\ T\ and\ an\ observation\ O,\ find\ an\ explanation\ E\ such\ that\ T \ \cup \ E\ \models O
+$
+\end{tcolorbox}
+\section{Completing incomplete programs}
+\begin{tcolorbox}
+$
+A\ program\ P\ is\ "complete"\ if\ for\ every\ (ground)\ fact\ f ,\ either\ P\models f\ or\ P\models \neg\ f
+$
+\end{tcolorbox}
+Completing an incomplete program is transforming it into a complete one that captures the intended meaning of the original program.
+\subsection{Closed world assumption}
+
+\begin{displayquote}
+\textbf{
+Everything that is not known to be true is false.}
+\end{displayquote}
+The first, simple method is called the Closed World Assumption; it is simple in the sense that it only works for definite clauses without negation. There is no need to say that something is false, as something not stated to be true is.
+
+Thus, if P is a program and $B_p$ is its Herbrand base, then we define the CWA-closure
+CWA(P) of P as:
+\begin{tcolorbox}
+$
+CWA(P) = P \cup {:-A | A \in B_p \wedge P \not\models A}
+$
+\end{tcolorbox}
+where CWA(P) is the intended program according to the Closed World Assumption. 
+\subsection{Predicate completion}
+The second method is called Predicate Completion; it can handle general programs with negated literals in the body of clauses. It may however lead to inconsistencies if the program is not stratified.
+
+Its principle is to turn implications (if) into equivalences (iff) by completing clauses (with the "and-only-if" parts).
+E.g:
+\begin{minted}{prolog}
+likes(peter,S):- student(S,peter).
+\end{minted}
+Its completion is:
+\begin{tcolorbox}
+$
+\forall X\forall\ likes(X,S) \leftrightarrow X=peter \wedge student(S,peter)
+$
+\end{tcolorbox}
+This gives in clausal form:
+\begin{minted}{prolog}
+likes(peter,S):- student(S,peter). %Original clause
+X=peter :-likes(X,S). % Added via the completion
+student(S,peter) :- likes(X,S) % Added via the completion
+\end{minted}
+
+The steps are:
+\begin{enumerate}
+\item Ensure that each argument of each clause head is a distinct variable
+\item If there are several clauses for a predicate, combine them into a single formula.
+\item Turn the implication into an equivalence.
+\item Convert to clausal form.
+\end{enumerate}
+
+This means that each clause nees to be seen as part of the definition of a specific predicate. The clause 
+
+\begin{minted}{prolog}
+likes(peter,S):- student_of(S,peter).
+\end{minted}
+is seen as part of the definition of the \texttt{likes} predicate. Thus, X likes S if and only if X is Peter and S is a student of Peter. 
+\subsection{Stable model}
+Guesses a model and verifies that it can be constructed from the program. It does thus introduce non-determinism. 
+
+
+\section{Inductive Reasoning}
+Induction is a form of reasoning that generalizes a rule from a number of similar observations
+\begin{minted}{text}
+It's dark, it must be after 9pm.
+\end{minted}
+In induction, we have:
+\begin{tcolorbox}
+$
+Theory \cup Hypothesis = Examples
+$
+\end{tcolorbox}
+\textbf{Induction} and \textbf{abduction} are quite similar. Their main difference is that in \textbf{Induction}, \textbf{Hypothesis} is allowed to be a set of clauses, while in \textbf{abduction} it has to be a set of ground facts. \textbf{Indtuction} reasoning is a hypothesis search involving successive \textbf{generalization} and \textbf{specialization} steps of a curent hypothesis. This means searching for a rule that generalizes those observations.
+\section{Unification and anti-unification}
+
+\section{Bottom up induction \& Top down induction}
+\subsection{Bottom up}
+Constructs the \textbf{rlgg}(Relative Least General Generalization) of two positive examples.
+It first removes all positive examples that are extensionally covered by the constructed clause and further generalizes the clause by removing literals as long as no negative examples are covered.
+\subsection{Top down}
+Starts with the most general definition and further specializes the clause by adding literals as long as negative examples are covered
+
 
 %\input{Conclusions}
 %\appendix

@@ -19,16 +19,44 @@ There are different clausal logic systems (in order of increasing expressiveness
 Only composed by atoms with are statements with a value of true or false.
 
 e.g.: married; bachelor :- man, adult.
+
+The \textbf{Herbrand base $\beta_p$} is the set of all atoms occurring in the program.
+
+A \textbf{Herbrand interpretation \textit{i}} is a mapping of all atoms in $\beta_p$ to a truth value.
+
+An interpretation is a \textbf{model for a \underline{clause}} if the clause is true under the interpretation.
+
+An interpretation is a \textbf{model for a \underline{program}} if it is a model for each clause of the program.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \item \textbf{Relational clausal logic}:
 
-Introduces relations between these atoms (constants or variables).
+Introduces relations between constants and/or variables.
 
 e.g.: likes(Declarative, S) :- crazy(S).
+
+The \textbf{Herbrand universe} is the set of all atoms the set of all ground terms occurring in P.
+
+The \textbf{Herbrand base $\beta_p$} is the set of all ground atoms that can be constructed using predicates in P and arguments in the Herbrand universe.
+
+A \textbf{Herbrand interpretation \textit{I}} is a subset of $\beta_p$, with all the ground atoms that are true.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \item \textbf{Full clausal logic}:
 
 To avoid explicit listing of clauses, we introduce function symbols and complex terms (\textit{functors}) 
 
 e.g.: loves(X, person\_loved\_by\_(X)).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \item \textbf{Definite clausal logic}:
 
 This is what Prolog uses. Clauses only have one true litteral.
@@ -42,12 +70,66 @@ e.g.: A :- $B_1$ , ... $B_n$
 \textbf{
 Once you reached me, stick with all variable substitutions you've found after you entered my clause.}
 \end{displayquote}
+
+Cuts are a procedural feature of Prolog and are expressed with the keyword !.
+When a cut is encountered, Prolog won't try alternatives for litterals left to the cut and the clause the cut is found, avoiding to backtrack.
+
+\subsection{Green Cut}
+Green cuts don't prune away success branches, it implies that the conjuncts on its left are deterministic and therefore don't need alternative solutions. It also implies that if the cut is reached, the clauses below with different head won't result in alternative solutions. Its use is to optimize the program. 
+
+e.g.:
+\begin{minted}{prolog}
+gamble(X) :- gotmoney(X),!.
+gamble(X) :- gotcredit(X), \+ gotmoney(X).
+\end{minted}
+
+\subsection{Red cut}
+Red cuts prune away success branches. This means that some logical consequences of the program are not returned. Changes the semantic of a program.
+
+e.g.:
+\begin{minted}{prolog}
+gamble(X) :- gotmoney(X),!.
+gamble(X) :- gotcredit(X).
+\end{minted}
+
+If for any reason the first rule is removed (e.g. by a cut-and-paste accident), the second rule will be broken, i.e., it will not guarantee the rule $ \textbackslash+ $ gotmoney(X).\footnote{\url(https://en.wikipedia.org/wiki/Cut\_(logic\_programming))}
+
+\section{Negation as failure}
+In Prolog, the predicate \texttt{not(X)} is succeeds when X fails. It's implemented like this:
+
+\begin{minted}{prolog}
+not(Goal) :- Goal, !, fail.
+not(Goal).
+\end{minted}
+
+\section{Floundering}
+Floundering occurs when argument is not ground.
+The problem is that the implementation of the operator \+ only works when applied to a literal containing no variables, i.e., a ground literal. It is not able to generate bindings for variables, but only test whether subgoals succeed or fail. So to guarantee reasonable answers to queries to programs containing negation, the negation operator must be allowed to apply only to ground literals. If it is applied to a nonground literal, the program is said to flounder. \footnote{http://stackoverflow.com/questions/14715070/prolog-negation-and-logical-negation}.
+
+For example, 
+
+\begin{minted}{prolog}
+\textbackslash+ a(X), v(X).
+end{minted}
+
+will lead to floundering since X is not ground in the not predicate. Instead, in order to avoid it, we need to use:
+
+\begin{minted}{prolog}
+v(X), \textbackslash+ a(X).
+end{minted}
+
 \section{Graphs}
+
 \section{Backward chaining \& Forward chaining}
+\subsection{Backward}
+
+\subsection{Forward}
 \section{Definite clause grammar}
 \section{Reasoning}
 \subsection{Default Reasoning}
 \subsection{Abductive Reasoning}
+\subsection{Monoton logic}
+\subsection{Stable Model Semantic}
 \subsection{Inductive Reasoning}
 \section{Program completion}
 \section{Closed world assumption}
